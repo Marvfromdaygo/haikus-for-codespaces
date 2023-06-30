@@ -1,0 +1,38 @@
+class ArbitrageBot:
+    def __init__(self):
+        self.profit_threshold = 0.02  # Minimum profit percentage threshold
+    
+    def find_arbitrage_opportunity(self, odds):
+        total_prob = 0.0
+        inv_odds = []
+        
+        for odd in odds:
+            inv_odds.append(1.0 / odd)  # Calculate the inverse of each odd
+            total_prob += 1.0 / odd  # Calculate the total probability
+        
+        inv_total_prob = 1.0 / total_prob  # Calculate the inverse of the total probability
+        
+        probabilities = [inv_total_prob * inv_odd for inv_odd in inv_odds]  # Calculate the normalized probabilities
+        
+        min_prob = min(probabilities)
+        max_prob = max(probabilities)
+        
+        if max_prob - min_prob > self.profit_threshold:
+            max_index = probabilities.index(max_prob)
+            min_index = probabilities.index(min_prob)
+            
+            return max_index, min_index
+        
+        return None, None
+
+# Usage example
+odds = [1.9, 2.2, 3.5]  # Example odds from different bookmakers
+bot = ArbitrageBot()
+max_index, min_index = bot.find_arbitrage_opportunity(odds)
+
+if max_index is not None and min_index is not None:
+    max_bookmaker = max_index + 1
+    min_bookmaker = min_index + 1
+    print(f"Arbitrage opportunity found between Bookmaker {max_bookmaker} and Bookmaker {min_bookmaker}!")
+else:
+    print("No arbitrage opportunity found.")
